@@ -13,3 +13,13 @@ stable-baselines3>=2.0.0
 numpy>=1.24.0
 pandas>=2.0.0
 scikit-learn>=1.2.0
+Flask
+numpy
+librosa
+pydub
+tqdm
+werkzeug
+keras-facenet
+googletrans
+openai-whisper
+ffmpeg

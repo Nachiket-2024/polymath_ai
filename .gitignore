@@ -1,0 +1,34 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.sqlite3
+*.db
+.env
+*.env
+.pytest_cache
+
+# --- Virtual Envs ---
+venv/
+env/
+.venv/
+
+# --- Editor / OS ---
+.vscode/
+.DS_Store
+
+# --- Logs ---
+logs/
+*.log
+
+# Ignore these folders anywhere in the repo
+**/database_images/
+**/dataset/
+**/uploads/
+
+# Ignore pickle files (e.g., label encoders, models)
+*.pkl
+*.pickle
+
+# Ignore audio files
+*.weba
