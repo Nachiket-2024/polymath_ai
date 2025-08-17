@@ -40,27 +40,37 @@ class MultimodalFusion(nn.Module):
         Forward pass for multimodal fusion.
 
         Args:
-            text_input (torch.Tensor): Input IDs or embeddings for text.
+            text_input (torch.Tensor or dict): Either a precomputed embedding tensor
+                or a tokenized BERT input dict (input_ids, attention_mask, etc.).
             audio_input (torch.Tensor): Audio input tensor (optional).
             vision_input (torch.Tensor): Vision input tensor (optional).
 
         Returns:
             torch.Tensor: Fused embedding vector.
         """
-        # Get text embeddings (using pooler output)
-        text_emb = self.text_model(**text_input).pooler_output  # (batch_size, hidden_dim)
+        # ---------------- Step 1: Handle text embeddings ----------------
+        if isinstance(text_input, torch.Tensor):
+            # Already an embedding tensor
+            text_emb = text_input
+        elif isinstance(text_input, dict):
+            # Tokenized input for BERT
+            text_emb = self.text_model(**text_input).pooler_output
+        else:
+            raise ValueError("text_input must be a torch.Tensor or tokenized dict for BERT")
 
-        # Process audio and vision if provided, else zero tensor
-        audio_emb = (
-            self.audio_model(audio_input).embeddings if self.audio_model and audio_input is not None
-            else torch.zeros_like(text_emb)
-        )
-        vision_emb = (
-            self.vision_model(vision_input).features if self.vision_model and vision_input is not None
-            else torch.zeros_like(text_emb)
-        )
+        # ---------------- Step 2: Handle audio embeddings ----------------
+        if self.audio_model is not None and audio_input is not None:
+            audio_emb = self.audio_model(audio_input).embeddings
+        else:
+            audio_emb = torch.zeros_like(text_emb)
 
-        # Weighted sum fusion
+        # ---------------- Step 3: Handle vision embeddings ----------------
+        if self.vision_model is not None and vision_input is not None:
+            vision_emb = self.vision_model(vision_input).features
+        else:
+            vision_emb = torch.zeros_like(text_emb)
+
+        # ---------------- Step 4: Weighted sum fusion ----------------
         fused = (
             self.fusion_weights[0] * text_emb +
             self.fusion_weights[1] * audio_emb +

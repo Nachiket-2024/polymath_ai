@@ -1,5 +1,6 @@
 # ---------------------------- External Imports ----------------------------
 import numpy as np
+import torch
 
 # ---------------------------- Internal Imports ----------------------------
 from .base_embedder import BaseEmbedder
@@ -9,7 +10,7 @@ from .utils import cosine_similarity
 class ConceptEmbedder(BaseEmbedder):
     """
     Extends BaseEmbedder to create higher-level concept embeddings by combining
-    embeddings of multiple words.
+    embeddings of multiple words. Also made callable to return embeddings from token IDs.
     """
 
     def embed_concept(self, words):
@@ -65,3 +66,27 @@ class ConceptEmbedder(BaseEmbedder):
             similarities.append((concept_name, sim))
         similarities.sort(key=lambda x: x[1], reverse=True)
         return similarities[:top_k]
+
+    # ---------------------------- Make Embedder Callable ----------------------------
+    def __call__(self, token_input):
+        """
+        Converts a list or tensor of token IDs into an embedding tensor.
+
+        Args:
+            token_input (list or torch.Tensor): Token IDs or strings.
+
+        Returns:
+            torch.Tensor: Embedding tensor of shape (1, embedding_dim).
+        """
+        # Convert tensor to list if needed
+        if isinstance(token_input, torch.Tensor):
+            token_input = token_input.tolist()[0]
+
+        # Convert integers to string tokens for dummy embeddings
+        words = [str(t) for t in token_input] if all(isinstance(t, int) for t in token_input) else token_input
+
+        # Get concept embedding
+        emb = self.embed_concept(words)
+
+        # Return as torch tensor
+        return torch.tensor(emb, dtype=torch.float32).unsqueeze(0)
