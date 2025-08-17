@@ -12,7 +12,7 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Configuration
-FACE_DB_PATH = r"database_images"
+FACE_DB_PATH = os.path.join(os.path.dirname(__file__), "database_images")
 THRESHOLD = 0.7
 
 # Global variables with thread locks

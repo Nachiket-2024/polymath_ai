@@ -1,12 +1,11 @@
 # ---------------------------- External Imports ----------------------------
-import os
 from transformers import BertTokenizer
 
 # ---------------------------- Internal Imports ----------------------------
 from ai_core.learning.self_evolving_ai import SelfEvolvingAI
 
 # ---------------------------- Config ----------------------------
-audio_file = "audio_recog/dataset/other/exercise_bike.wav"
+audio_file = "audio_recognition/dataset/other/exercise_bike.wav"
 device = 'cpu'
 
 # ---------------------------- Initialize Model ----------------------------
